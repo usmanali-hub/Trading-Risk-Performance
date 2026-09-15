@@ -44,11 +44,15 @@ def moving_average_backtest(
     x["price_change"] = x["close"].diff().fillna(0)
     x["gross_pnl"] = x["position"] * x["price_change"] * units
 
-    # Spread is paid on every position change; slippage scales with traded price.
+    # A position change is decided from the prior close and is therefore
+    # executed at that same prior close. Record the resulting costs on the
+    # following row alongside the P&L earned while holding that position.
     turnover = x["position"].diff().abs().fillna(x["position"].abs())
-    spread_cost = turnover * (x["close"].abs() * spread_bps / 10_000) * units
-    slippage_cost = turnover * (x["close"].abs() * slippage_bps / 10_000) * units
+    execution_price = x["close"].shift(1).abs().fillna(x["close"].abs())
+    spread_cost = turnover * (execution_price * spread_bps / 10_000) * units
+    slippage_cost = turnover * (execution_price * slippage_bps / 10_000) * units
     commission = turnover * (units / 100_000) * commission_per_100k
+    x["execution_price"] = execution_price
     x["spread_cost"] = spread_cost
     x["slippage_cost"] = slippage_cost
     x["commission"] = commission
