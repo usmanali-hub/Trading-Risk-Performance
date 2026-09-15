@@ -2,11 +2,22 @@
 
 ## Trade-level performance → risk-aware decisions
 
-A reproducible financial analytics project that evaluates **performance, risk, drawdowns, expectancy, tail losses, concentration, and strategy behavior** using Python, SQL, statistical analysis, and visual reporting.
+A recruiter-ready, reproducible financial analytics project that evaluates **performance, risk, drawdowns, expectancy, tail losses, concentration, and strategy behavior** using Python, SQL, statistical analysis, and visual reporting.
 
-### Why this project matters
+> **Portfolio focus:** separating headline return from the risk, concentration, and behavioral characteristics underneath it.
 
-Headline P&L can hide fragile performance. This project separates **return, efficiency, downside risk, drawdown, concentration, and segment behavior** so an analyst can investigate where performance is actually coming from.
+### Analyst Snapshot
+
+| Capability | Demonstrated here |
+|---|---|
+| Data preparation | Validation, cleaning, duplicate and risk checks |
+| Performance analysis | P&L, win rate, profit factor, expectancy |
+| Risk analysis | Drawdown, volatility, downside deviation, VaR/CVaR |
+| Concentration | Top-winner P&L contribution |
+| Segmentation | Strategy, instrument, session, market regime |
+| SQL | Reusable business analysis queries |
+| Communication | Executive risk dashboard and findings |
+| Reproducibility | Fixed-seed dataset + tests + GitHub Actions |
 
 ## Business Questions
 
@@ -17,6 +28,14 @@ Headline P&L can hide fragile performance. This project separates **return, effi
 - Are results concentrated in a small number of winning trades?
 - Which sessions and market regimes contribute most to performance?
 - Where should risk controls or further investigation be prioritized?
+
+## Executive Dashboard
+
+See the recruiter-facing interpretation layer: **[Executive Risk Dashboard](reports/executive_dashboard.md)**.
+
+The dashboard follows:
+
+**Performance → downside → concentration → segmentation → next risk question**
 
 ## Analytical Workflow
 
@@ -47,7 +66,7 @@ The Sharpe-style measure is deliberately labeled a **trade-level proxy** and is 
 
 ## Tech Stack
 
-**Python · pandas · NumPy · SQL · Matplotlib · Git/GitHub · GitHub Actions**
+**Python · pandas · NumPy · SQL · Matplotlib · Git/GitHub · GitHub Actions · pytest**
 
 ## Repository Structure
 
@@ -55,9 +74,10 @@ The Sharpe-style measure is deliberately labeled a **trade-level proxy** and is 
 ├── data/                 # Synthetic dataset documentation
 ├── docs/                 # Methodology, dictionary, decision framework
 ├── notebooks/            # Analytical walkthrough
-├── reports/              # Executive interpretation
+├── reports/              # Executive interpretation and risk metrics
 ├── sql/                  # Business analysis queries
 ├── src/                  # Generation, cleaning, performance, risk, visualization
+├── tests/                # Automated analytical checks
 ├── visualizations/       # Chart documentation
 ├── .github/workflows/    # Automated quality checks
 ├── README.md
@@ -73,6 +93,7 @@ python src/clean_data.py
 python src/performance_analysis.py
 python src/risk_analysis.py
 python src/create_visualizations.py
+pytest -q
 ```
 
 The dataset uses a fixed random seed so the analytical workflow can be reproduced consistently. Generated data and charts are excluded from Git.
@@ -90,3 +111,11 @@ The dataset uses a fixed random seed so the analytical workflow can be reproduce
 ## Data Integrity
 
 All trading records are **synthetic** and created for portfolio demonstration. No private client, employer, brokerage, or account data is included. Results are not investment advice or evidence of future performance.
+
+## Portfolio
+
+Part of a three-project Data Analyst portfolio:
+
+- **Macro Market Intelligence** — economic and market context
+- **Trading Risk & Performance Analytics** — financial risk and performance
+- **Customer Support Analytics** — business and operations analytics
