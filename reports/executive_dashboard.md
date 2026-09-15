@@ -1,6 +1,10 @@
-# Executive Risk Dashboard
+# Executive Risk Dashboard — Trading Risk & Performance
 
-## Performance → risk → concentration
+> **Trade-level performance → risk-aware decisions**
+
+This is the recruiter-facing entry point for the analytical output. Charts are generated reproducibly from the synthetic trade dataset.
+
+## Executive View
 
 | Lens | KPI | Decision question |
 |---|---|---|
@@ -8,13 +12,20 @@
 | Efficiency | Profit factor / expectancy | Is the return profile efficient? |
 | Downside | Max drawdown / CVaR 95% | How severe are adverse outcomes? |
 | Recovery | Recovery factor | How efficiently is drawdown recovered? |
-| Concentration | Top 10% winner share | Is performance dependent on a small set of trades? |
+| Concentration | Top 10% winner share | Is performance dependent on a small group of trades? |
 | Consistency | Loss streak / variability | How stable is the outcome distribution? |
 | Segments | Strategy / instrument / session / regime | Where does behavior change? |
 
-## Executive interpretation
+## Generated Visuals
 
-Review performance in this sequence:
+Running `src/create_visualizations.py` creates:
+
+- `equity_curve.png` — cumulative P&L path
+- `drawdown.png` — drawdown from the running equity peak
+- `strategy_pnl.png` — total P&L by strategy
+- `regime_avg_pnl.png` — average trade P&L by market regime
+
+## Risk Interpretation
 
 1. Establish return and expectancy.
 2. Quantify drawdown and tail losses.
@@ -22,8 +33,25 @@ Review performance in this sequence:
 4. Segment results before making a strategy-level conclusion.
 5. Identify the next risk-control or validation question.
 
-## Interview narrative
+### Important metric note
 
-**Headline return is only the starting point.** A strong analyst explains how much downside, concentration, and behavioral variability sits underneath that return.
+The Sharpe-style measure in this project is a **trade-level proxy**, not an annualized Sharpe ratio. VaR/CVaR are calculated from trade P&L and should be interpreted within that same dataset context.
 
-All observations must be generated from the synthetic dataset; this dashboard is an analytical framework, not a performance claim.
+## Data Integrity
+
+- The dataset is synthetic and generated with a fixed seed.
+- No private brokerage, client, employer, or account data is used.
+- Results demonstrate analytical methodology; they are not claims about future trading performance.
+
+## Reproduce
+
+```bash
+pip install -r requirements.txt
+python src/generate_data.py
+python src/clean_data.py
+python src/performance_analysis.py
+python src/risk_analysis.py
+python src/create_visualizations.py
+```
+
+**Interview framing:** `Return → downside → concentration → segmentation → risk-control question.`
