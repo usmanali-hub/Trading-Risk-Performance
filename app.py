@@ -19,7 +19,13 @@ st.caption("Trade-level risk analytics plus an optional historical Forex validat
 
 
 def prepare_data():
-    if not DATA.exists():
+    needs_refresh = not DATA.exists()
+    if DATA.exists():
+        try:
+            needs_refresh = "gross_pnl" not in pd.read_csv(DATA, nrows=1).columns
+        except Exception:
+            needs_refresh = True
+    if needs_refresh:
         subprocess.run([sys.executable, "src/generate_data.py"], cwd=ROOT, check=True)
         subprocess.run([sys.executable, "src/clean_data.py"], cwd=ROOT, check=True)
 
@@ -42,14 +48,17 @@ if filtered.empty:
     st.stop()
 
 risk = risk_summary(filtered)
-gross_pnl = filtered["gross_pnl"].sum() if "gross_pnl" in filtered else filtered["pnl"].sum()
-total_cost = filtered["total_cost"].sum() if "total_cost" in filtered else gross_pnl - filtered["pnl"].sum()
+gross_pnl = filtered["gross_pnl"].sum()
+total_cost = filtered["total_cost"].sum()
+wins = filtered.loc[filtered.pnl > 0, "pnl"].sum()
+losses = abs(filtered.loc[filtered.pnl < 0, "pnl"].sum())
+profit_factor = wins / losses if losses else float("inf")
 
 st.subheader("Executive Risk Panel — Synthetic Trade Dataset")
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("Net P&L", f"{filtered.pnl.sum():,.2f}")
 c2.metric("Max Drawdown", f"{risk['max_drawdown']:,.2f}")
-c3.metric("Profit Factor", f"{(filtered.loc[filtered.pnl > 0, 'pnl'].sum() / abs(filtered.loc[filtered.pnl < 0, 'pnl'].sum())):.2f}")
+c3.metric("Profit Factor", f"{profit_factor:.2f}")
 c4.metric("CVaR 95%", f"{risk['cvar_95_trade_pnl']:,.2f}")
 c5.metric("Recovery Factor", f"{risk['recovery_factor']:.2f}" if pd.notna(risk['recovery_factor']) else "N/A")
 
@@ -82,11 +91,8 @@ regime = filtered.groupby("market_regime")["pnl"].agg(["count", "sum", "mean"]).
 st.dataframe(regime, use_container_width=True)
 
 st.subheader("Execution Cost Breakdown")
-if {"spread_cost", "slippage_cost", "commission"}.issubset(filtered.columns):
-    costs = filtered[["spread_cost", "slippage_cost", "commission"]].sum().round(2)
-    st.dataframe(costs.rename("cost").to_frame(), use_container_width=True)
-else:
-    st.info("Cost fields are unavailable in this dataset version.")
+costs = filtered[["spread_cost", "slippage_cost", "commission"]].sum().round(2)
+st.dataframe(costs.rename("cost").to_frame(), use_container_width=True)
 
 st.subheader("Historical Forex Validation")
 st.write("This optional path downloads public daily market data and runs a simple moving-average strategy with explicit spread, slippage, and commission assumptions. It is a validation demonstration, not broker performance or investment advice.")
@@ -104,23 +110,14 @@ with st.expander("Backtest assumptions"):
 if st.button("Run EURUSD historical validation"):
     try:
         market = download_daily("EURUSD", start="2020-01-01")
-        result = moving_average_backtest(
-            market,
-            fast_window=fast,
-            slow_window=slow,
-            units=units,
-            spread_bps=spread_bps,
-            slippage_bps=slippage_bps,
-            commission_per_100k=commission,
-        )
+        result = moving_average_backtest(market, fast_window=fast, slow_window=slow, units=units, spread_bps=spread_bps, slippage_bps=slippage_bps, commission_per_100k=commission)
         summary = backtest_summary(result)
         a, b, c, d = st.columns(4)
         a.metric("Gross P&L", f"{summary['gross_pnl']:,.2f}")
         b.metric("Net P&L", f"{summary['net_pnl']:,.2f}")
         c.metric("Total Costs", f"{summary['total_costs']:,.2f}")
         d.metric("Max Net Drawdown", f"{summary['max_net_drawdown']:,.2f}")
-        chart = result.set_index("date")[["equity_gross", "equity_net"]]
-        st.line_chart(chart)
+        st.line_chart(result.set_index("date")[["equity_gross", "equity_net"]])
         st.dataframe(result.tail(20), use_container_width=True)
         st.caption("Public historical market data is used only to validate the analytics pipeline. Strategy parameters and execution costs are assumptions and should not be interpreted as evidence of future returns.")
     except Exception as exc:
