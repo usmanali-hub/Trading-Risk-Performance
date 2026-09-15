@@ -32,8 +32,15 @@ def moving_average_backtest(
     x = market[["date", "close"]].copy().sort_values("date").dropna()
     x["fast_ma"] = x["close"].rolling(fast_window).mean()
     x["slow_ma"] = x["close"].rolling(slow_window).mean()
-    raw_signal = np.where(x["fast_ma"] > x["slow_ma"], 1, -1)
-    x["position"] = pd.Series(raw_signal, index=x.index).shift(1).fillna(0)
+
+    # Keep the warm-up period flat. Once both averages exist, lag the signal
+    # so today's position only uses information available at the prior close.
+    raw_signal = pd.Series(0, index=x.index, dtype=float)
+    valid = x["fast_ma"].notna() & x["slow_ma"].notna()
+    raw_signal.loc[valid] = np.where(
+        x.loc[valid, "fast_ma"] > x.loc[valid, "slow_ma"], 1, -1
+    )
+    x["position"] = raw_signal.shift(1).fillna(0)
     x["price_change"] = x["close"].diff().fillna(0)
     x["gross_pnl"] = x["position"] * x["price_change"] * units
 
