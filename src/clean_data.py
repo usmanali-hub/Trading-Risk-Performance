@@ -6,6 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INPUT = ROOT / "data" / "trades.csv"
 OUTPUT = ROOT / "data" / "clean_trades.csv"
 REQUIRED = ["trade_id", "date", "strategy", "instrument", "session", "market_regime", "risk_amount", "pnl", "return_on_risk_pct", "outcome"]
+OPTIONAL_NUMERIC = ["gross_pnl", "spread_cost", "slippage_cost", "commission", "total_cost"]
 
 
 def clean(df):
@@ -14,7 +15,7 @@ def clean(df):
         raise ValueError(f"Missing required columns: {missing}")
     df = df.copy()
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
-    numeric = ["risk_amount", "pnl", "return_on_risk_pct"]
+    numeric = ["risk_amount", "pnl", "return_on_risk_pct"] + [c for c in OPTIONAL_NUMERIC if c in df.columns]
     for col in numeric:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     df = df.dropna(subset=REQUIRED)
