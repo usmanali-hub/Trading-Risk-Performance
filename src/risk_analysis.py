@@ -13,10 +13,12 @@ def add_equity_metrics(df):
     df["equity"] = df["pnl"].cumsum()
     df["peak_equity"] = df["equity"].cummax()
     df["drawdown"] = df["equity"] - df["peak_equity"]
+    # Percentage drawdown is only meaningful once the running equity peak is
+    # positive. A zero/negative peak has no meaningful percentage denominator.
     df["drawdown_pct"] = np.where(
-        df["peak_equity"] != 0,
+        df["peak_equity"] > 0,
         df["drawdown"] / df["peak_equity"] * 100,
-        0,
+        np.nan,
     )
     return df
 
