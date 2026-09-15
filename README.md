@@ -6,7 +6,23 @@ A recruiter-ready, reproducible financial analytics project that evaluates **per
 
 > **Portfolio focus:** separating headline return from the risk, concentration, and behavioral characteristics underneath it.
 
-### Analyst Snapshot
+## Executive Dashboard
+
+See the recruiter-facing interpretation layer: **[Executive Risk Dashboard](reports/executive_dashboard.md)**.
+
+### Visual Analysis
+
+![Cumulative Trading P&L](visualizations/equity_curve.svg)
+
+![Trading Drawdown](visualizations/drawdown.svg)
+
+![Total P&L by Strategy](visualizations/strategy_pnl.svg)
+
+![Average P&L by Market Regime](visualizations/regime_avg_pnl.svg)
+
+The charts above are generated from the project's fixed-seed synthetic trade generator; they are committed as SVG so they render directly on GitHub.
+
+## Analyst Snapshot
 
 | Capability | Demonstrated here |
 |---|---|
@@ -28,14 +44,6 @@ A recruiter-ready, reproducible financial analytics project that evaluates **per
 - Are results concentrated in a small number of winning trades?
 - Which sessions and market regimes contribute most to performance?
 - Where should risk controls or further investigation be prioritized?
-
-## Executive Dashboard
-
-See the recruiter-facing interpretation layer: **[Executive Risk Dashboard](reports/executive_dashboard.md)**.
-
-The dashboard follows:
-
-**Performance → downside → concentration → segmentation → next risk question**
 
 ## Analytical Workflow
 
@@ -68,22 +76,6 @@ The Sharpe-style measure is deliberately labeled a **trade-level proxy** and is 
 
 **Python · pandas · NumPy · SQL · Matplotlib · Git/GitHub · GitHub Actions · pytest**
 
-## Repository Structure
-
-```text
-├── data/                 # Synthetic dataset documentation
-├── docs/                 # Methodology, dictionary, decision framework
-├── notebooks/            # Analytical walkthrough
-├── reports/              # Executive interpretation and risk metrics
-├── sql/                  # Business analysis queries
-├── src/                  # Generation, cleaning, performance, risk, visualization
-├── tests/                # Automated analytical checks
-├── visualizations/       # Chart documentation
-├── .github/workflows/    # Automated quality checks
-├── README.md
-└── requirements.txt
-```
-
 ## Reproducibility
 
 ```bash
@@ -96,17 +88,7 @@ python src/create_visualizations.py
 pytest -q
 ```
 
-The dataset uses a fixed random seed so the analytical workflow can be reproduced consistently. Generated data and charts are excluded from Git.
-
-## Decision Framework
-
-**Performance:** Start with P&L, expectancy, profit factor, and return on risk.
-
-**Risk:** Evaluate drawdown, tail losses, volatility, streaks, and recovery.
-
-**Concentration:** Check whether a small group of winners drives a disproportionate share of positive P&L.
-
-**Segmentation:** Compare strategy, instrument, session, and market regime before drawing conclusions.
+The synthetic dataset uses a fixed random seed. The visualization script now generates SVG outputs that are versioned in Git so the portfolio's visual layer is visible on GitHub.
 
 ## Data Integrity
 
