@@ -2,15 +2,38 @@
 
 ## Trade-level performance → risk-aware decisions
 
-A recruiter-ready, reproducible financial analytics project that evaluates **performance, risk, drawdowns, expectancy, tail losses, concentration, and strategy behavior** using Python, SQL, statistical analysis, and visual reporting.
+A recruiter-ready **financial analytics** project that evaluates trading performance, drawdowns, tail risk, concentration, strategy behavior, and market-regime differences using Python, SQL, statistical analysis, and visual reporting.
 
-> **Portfolio focus:** separating headline return from the risk, concentration, and behavioral characteristics underneath it.
+> **Recruiter takeaway:** this project shows that I can separate headline performance from the risk and behavior underneath it.
 
-## Executive Dashboard
+## The Business Problem
 
-See the recruiter-facing interpretation layer: **[Executive Risk Dashboard](reports/executive_dashboard.md)**.
+A positive P&L number does not explain whether performance is efficient, concentrated, volatile, or vulnerable to large losses. This project builds a reproducible framework for answering those questions from trade-level data.
 
-### Visual Analysis
+### Questions the analysis answers
+
+- What are total P&L, win rate, profit factor, and expectancy?
+- How deep and persistent are drawdowns?
+- What do VaR and CVaR reveal about tail losses?
+- Is performance dependent on a small group of winning trades?
+- Which strategies, instruments, sessions, or regimes behave differently?
+- Where should risk controls or further validation be prioritized?
+
+## Executive View
+
+| Lens | Measures | Decision question |
+|---|---|---|
+| **Performance** | P&L, average trade, win rate | Is performance positive? |
+| **Efficiency** | Profit factor, expectancy | How efficient is the return profile? |
+| **Downside** | Max drawdown, volatility, CVaR | How severe are adverse outcomes? |
+| **Recovery** | Recovery factor | How efficiently is drawdown recovered? |
+| **Concentration** | Top-winner contribution | Is performance dependent on a few trades? |
+| **Consistency** | Loss streaks, variability | How stable is the outcome distribution? |
+| **Segmentation** | Strategy, instrument, session, regime | Where does behavior change? |
+
+## Visual Analysis
+
+The key charts are visible directly on GitHub:
 
 ![Cumulative Trading P&L](visualizations/equity_curve.svg)
 
@@ -20,63 +43,43 @@ See the recruiter-facing interpretation layer: **[Executive Risk Dashboard](repo
 
 ![Average P&L by Market Regime](visualizations/regime_avg_pnl.svg)
 
-The charts above are generated from the project's fixed-seed synthetic trade generator; they are committed as SVG so they render directly on GitHub.
+These visuals are generated from the project's fixed-seed synthetic dataset and committed as SVG so a recruiter can inspect the analytical output without opening the source code.
 
-## Analyst Snapshot
-
-| Capability | Demonstrated here |
-|---|---|
-| Data preparation | Validation, cleaning, duplicate and risk checks |
-| Performance analysis | P&L, win rate, profit factor, expectancy |
-| Risk analysis | Drawdown, volatility, downside deviation, VaR/CVaR |
-| Concentration | Top-winner P&L contribution |
-| Segmentation | Strategy, instrument, session, market regime |
-| SQL | Reusable business analysis queries |
-| Communication | Executive risk dashboard and findings |
-| Reproducibility | Fixed-seed dataset + tests + GitHub Actions |
-
-## Business Questions
-
-- Which strategies and instruments produce the strongest risk-adjusted behavior?
-- What are win rate, profit factor, expectancy, and average return per trade?
-- How deep and persistent are drawdowns?
-- What do VaR and CVaR reveal about tail losses?
-- Are results concentrated in a small number of winning trades?
-- Which sessions and market regimes contribute most to performance?
-- Where should risk controls or further investigation be prioritized?
+**[Open the Executive Risk Dashboard](reports/executive_dashboard.md)** for the KPI and decision framework.
 
 ## Analytical Workflow
 
 ```text
-Synthetic Trade Data → Validation & Cleaning
+Synthetic Trade Data
+        ↓
+Validation & Cleaning
         ↓
 Performance Metrics → Drawdown & Tail Risk
         ↓
-Concentration Analysis → Strategy / Instrument / Session / Regime Segmentation
+Concentration → Strategy / Instrument / Session / Regime Segmentation
         ↓
-SQL → Visual Reporting → Decision Framework
+SQL + Visual Reporting
+        ↓
+Risk-Control Questions
 ```
 
-## Advanced Analytics
+## What This Demonstrates
 
-| Area | Metrics |
-|---|---|
-| Performance | Total P&L, average trade, win rate, average win/loss |
-| Efficiency | Profit factor, expectancy, return on risk |
-| Risk | Max drawdown, drawdown %, P&L volatility, downside deviation |
-| Tail risk | VaR 95%, CVaR 95% |
-| Recovery | Recovery factor |
-| Consistency | Loss streaks, variability |
-| Concentration | Top-10%-winner P&L share |
-| Segmentation | Strategy, instrument, session, market regime |
+**Performance analytics** — P&L, win rate, profit factor, expectancy, average trade.
 
-The Sharpe-style measure is deliberately labeled a **trade-level proxy** and is not presented as an annualized investment statistic.
+**Risk analytics** — drawdown, downside deviation, VaR/CVaR, volatility, recovery factor.
+
+**Segmentation** — strategy, instrument, session, and market regime.
+
+**Statistical discipline** — the Sharpe-style measure is explicitly treated as a trade-level proxy, not an annualized Sharpe ratio.
+
+**Business communication** — `Return → downside → concentration → segmentation → risk-control question`.
 
 ## Tech Stack
 
 **Python · pandas · NumPy · SQL · Matplotlib · Git/GitHub · GitHub Actions · pytest**
 
-## Reproducibility
+## Reproduce It
 
 ```bash
 pip install -r requirements.txt
@@ -88,15 +91,24 @@ python src/create_visualizations.py
 pytest -q
 ```
 
-The synthetic dataset uses a fixed random seed. The visualization script now generates SVG outputs that are versioned in Git so the portfolio's visual layer is visible on GitHub.
+## Repository Map
+
+| Folder | Purpose |
+|---|---|
+| `reports/` | Executive risk interpretation |
+| `visualizations/` | Recruiter-visible charts |
+| `sql/` | Reusable business analysis queries |
+| `src/` | Data generation and analytics pipeline |
+| `tests/` | Automated validation |
+| `.github/workflows/` | CI quality checks |
 
 ## Data Integrity
 
-All trading records are **synthetic** and created for portfolio demonstration. No private client, employer, brokerage, or account data is included. Results are not investment advice or evidence of future performance.
+The dataset is **synthetic**, fixed-seed, and created for portfolio demonstration. No private client, employer, brokerage, or account data is used. Results are not investment advice or evidence of future performance.
 
 ## Portfolio
 
-Part of a three-project Data Analyst portfolio:
+Part of a three-project analytics portfolio:
 
 - **Macro Market Intelligence** — economic and market context
 - **Trading Risk & Performance Analytics** — financial risk and performance
