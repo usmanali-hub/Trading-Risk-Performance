@@ -22,6 +22,13 @@ def test_equity_metrics():
     assert result["drawdown"].min() == -75.0
 
 
+def test_drawdown_pct_is_not_reported_for_non_positive_peak():
+    trades = sample_trades().assign(pnl=[-100.0, -25.0, 50.0, 75.0])
+    result = add_equity_metrics(trades)
+    assert result["peak_equity"].max() == 0.0
+    assert result["drawdown_pct"].isna().all()
+
+
 def test_risk_summary_contains_tail_metrics():
     result = risk_summary(sample_trades())
     assert result["total_pnl"] == 100.0
