@@ -4,15 +4,23 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - run: pip install pytest
+      - run: python src/generate_data.py
+      - run: python src/clean_data.py
+      - run: python src/performance_analysis.py
+      - run: python src/risk_analysis.py
+      - run: python src/create_visualizations.py
       - run: python -m compileall src tests
       - run: PYTHONPATH=. pytest -q
