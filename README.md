@@ -6,6 +6,19 @@ A recruiter-ready **financial analytics** project that evaluates trading perform
 
 > **Recruiter takeaway:** this project shows that I can separate headline performance from the risk and behavior underneath it.
 
+## Interactive Dashboard
+
+Run the project as an interactive local dashboard:
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+The dashboard lets users filter by **strategy** and **market regime**, then explore P&L, win rate, profit factor, equity curve, and segment performance. The app automatically generates the fixed-seed synthetic dataset if it is not present.
+
+For a hosted version, deploy `app.py` on any Streamlit-compatible hosting service.
+
 ## The Business Problem
 
 A positive P&L number does not explain whether performance is efficient, concentrated, volatile, or vulnerable to large losses. This project builds a reproducible framework for answering those questions from trade-level data.
@@ -77,7 +90,7 @@ Risk-Control Questions
 
 ## Tech Stack
 
-**Python · pandas · NumPy · SQL · Matplotlib · Git/GitHub · GitHub Actions · pytest**
+**Python · pandas · NumPy · SQL · Matplotlib · Git/GitHub · GitHub Actions · pytest · Streamlit**
 
 ## Reproduce It
 
@@ -95,6 +108,7 @@ pytest -q
 
 | Folder | Purpose |
 |---|---|
+| `app.py` | Interactive Streamlit dashboard |
 | `reports/` | Executive risk interpretation |
 | `visualizations/` | Recruiter-visible charts |
 | `sql/` | Reusable business analysis queries |
