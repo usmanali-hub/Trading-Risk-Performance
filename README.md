@@ -1,72 +1,67 @@
 # Trading Risk & Performance Analytics
 
-## Turning trade-level records into risk-aware decisions
+## Trade-level performance → risk-aware decisions
 
-A reproducible financial analytics project that evaluates **trading performance, risk, drawdowns, expectancy, and strategy behavior** using Python, SQL, statistical analysis, and visual reporting.
+A reproducible financial analytics project that evaluates **performance, risk, drawdowns, expectancy, tail losses, concentration, and strategy behavior** using Python, SQL, statistical analysis, and visual reporting.
 
-The objective is to move beyond headline P&L and answer a more useful question: **where is performance actually coming from, and what level of risk is required to produce it?**
+### Why this project matters
+
+Headline P&L can hide fragile performance. This project separates **return, efficiency, downside risk, drawdown, concentration, and segment behavior** so an analyst can investigate where performance is actually coming from.
 
 ## Business Questions
 
 - Which strategies and instruments produce the strongest risk-adjusted behavior?
-- What are the win rate, profit factor, expectancy, and average return per trade?
+- What are win rate, profit factor, expectancy, and average return per trade?
 - How deep and persistent are drawdowns?
-- Are results concentrated in a small number of trades?
-- Which sessions contribute most to performance?
-- How does strategy behavior change across market regimes?
+- What do VaR and CVaR reveal about tail losses?
+- Are results concentrated in a small number of winning trades?
+- Which sessions and market regimes contribute most to performance?
 - Where should risk controls or further investigation be prioritized?
 
 ## Analytical Workflow
 
 ```text
-Synthetic Trade Data
+Synthetic Trade Data → Validation & Cleaning
         ↓
-Validation & Cleaning
+Performance Metrics → Drawdown & Tail Risk
         ↓
-Performance Metrics
+Concentration Analysis → Strategy / Instrument / Session / Regime Segmentation
         ↓
-Risk & Drawdown Analysis
-        ↓
-Strategy / Instrument / Session / Regime Segmentation
-        ↓
-SQL Business Queries
-        ↓
-Visual Reporting
-        ↓
-Decision-Oriented Findings
+SQL → Visual Reporting → Decision Framework
 ```
 
-## Key Metrics
+## Advanced Analytics
 
 | Area | Metrics |
 |---|---|
 | Performance | Total P&L, average trade, win rate, average win/loss |
 | Efficiency | Profit factor, expectancy, return on risk |
-| Risk | Maximum drawdown, drawdown %, volatility, downside deviation |
-| Consistency | Loss streaks, variability, concentration |
+| Risk | Max drawdown, drawdown %, P&L volatility, downside deviation |
+| Tail risk | VaR 95%, CVaR 95% |
+| Recovery | Recovery factor |
+| Consistency | Loss streaks, variability |
+| Concentration | Top-10%-winner P&L share |
 | Segmentation | Strategy, instrument, session, market regime |
+
+The Sharpe-style measure is deliberately labeled a **trade-level proxy** and is not presented as an annualized investment statistic.
 
 ## Tech Stack
 
-- **Python** — analytical pipeline and automation
-- **pandas / NumPy** — data preparation and statistical calculations
-- **SQL** — portfolio and trading-performance queries
-- **Matplotlib** — performance and risk visualization
-- **Git / GitHub** — version control and reproducibility
+**Python · pandas · NumPy · SQL · Matplotlib · Git/GitHub · GitHub Actions**
 
 ## Repository Structure
 
 ```text
-├── data/                 # Dataset documentation; generated CSVs are ignored
-├── docs/                 # Methodology and findings
+├── data/                 # Synthetic dataset documentation
+├── docs/                 # Methodology, dictionary, decision framework
 ├── notebooks/            # Analytical walkthrough
 ├── reports/              # Executive interpretation
-├── sql/                  # Trading analysis queries
+├── sql/                  # Business analysis queries
 ├── src/                  # Generation, cleaning, performance, risk, visualization
-├── visualizations/       # Chart documentation; generated PNGs are ignored
-├── .gitignore
-├── requirements.txt
-└── README.md
+├── visualizations/       # Chart documentation
+├── .github/workflows/    # Automated quality checks
+├── README.md
+└── requirements.txt
 ```
 
 ## Reproducibility
@@ -80,14 +75,18 @@ python src/risk_analysis.py
 python src/create_visualizations.py
 ```
 
-The dataset is generated with a fixed random seed so the analytical workflow can be reproduced consistently. Generated CSV and PNG outputs are excluded from Git.
+The dataset uses a fixed random seed so the analytical workflow can be reproduced consistently. Generated data and charts are excluded from Git.
 
-## Data Integrity Note
+## Decision Framework
 
-The trading records are **synthetic** and created for portfolio demonstration. No private client, employer, brokerage, or account data is included. The results should not be interpreted as investment advice or evidence of future trading performance.
+**Performance:** Start with P&L, expectancy, profit factor, and return on risk.
 
-## What This Project Demonstrates
+**Risk:** Evaluate drawdown, tail losses, volatility, streaks, and recovery.
 
-This project demonstrates practical Data Analyst skills across **financial analysis, risk measurement, data validation, segmentation, SQL, Python automation, statistical reasoning, visualization, and executive reporting**.
+**Concentration:** Check whether a small group of winners drives a disproportionate share of positive P&L.
 
-The emphasis is on explaining performance in context rather than presenting raw returns without a risk lens.
+**Segmentation:** Compare strategy, instrument, session, and market regime before drawing conclusions.
+
+## Data Integrity
+
+All trading records are **synthetic** and created for portfolio demonstration. No private client, employer, brokerage, or account data is included. Results are not investment advice or evidence of future performance.
