@@ -18,12 +18,14 @@ This is the recruiter-facing entry point for the analytical output. Charts are g
 
 ## Generated Visuals
 
-Running `src/create_visualizations.py` creates:
+Running `src/create_visualizations.py` creates these charts under `visualizations/`:
 
-- `equity_curve.png` — cumulative P&L path
-- `drawdown.png` — drawdown from the running equity peak
-- `strategy_pnl.png` — total P&L by strategy
-- `regime_avg_pnl.png` — average trade P&L by market regime
+- `equity_curve.svg` — cumulative P&L path
+- `drawdown.svg` — drawdown from the running equity peak
+- `strategy_pnl.svg` — total P&L by strategy
+- `regime_avg_pnl.svg` — average trade P&L by market regime
+
+These SVG files are committed so the analytical output is visible directly on GitHub without opening source code.
 
 ## Risk Interpretation
 
