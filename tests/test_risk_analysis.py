@@ -35,3 +35,5 @@ def test_risk_summary_contains_tail_metrics():
     assert "var_95_trade_pnl" in result
     assert "cvar_95_trade_pnl" in result
     assert "recovery_factor" in result
+    assert "negative_pnl_std" in result
+    assert "downside_deviation" not in result
