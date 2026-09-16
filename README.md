@@ -22,6 +22,7 @@ The dashboard includes:
 - Equity and drawdown views
 - Strategy and market-regime segmentation
 - Tail-risk metrics including CVaR
+- A generic position-sizing and exposure-risk calculator
 - An optional **historical EURUSD validation path** using public daily market data
 - A simple moving-average backtest with lagged signals and configurable execution-cost assumptions
 
@@ -40,6 +41,9 @@ A positive P&L number does not explain whether performance is efficient, concent
 - Is performance dependent on a small group of winning trades?
 - Which strategies, instruments, sessions, or regimes behave differently?
 - Does a simple historical strategy remain profitable after explicit cost assumptions?
+- Given an account risk budget and stop distance, what position size follows from the stated assumptions?
+- How large is the resulting notional exposure and simplified margin requirement?
+- Does the calculated exposure remain within a stated portfolio limit?
 - Where should risk controls or further validation be prioritized?
 
 ## Executive View
@@ -53,7 +57,46 @@ A positive P&L number does not explain whether performance is efficient, concent
 | **Recovery** | Recovery factor | How efficiently is drawdown recovered? |
 | **Concentration** | Top-winner contribution | Is performance dependent on a few trades? |
 | **Consistency** | Loss streaks, variability | How stable is the outcome distribution? |
+| **Exposure** | Risk budget, position size, notional, margin, exposure % | Does the proposed trade fit stated risk limits? |
 | **Segmentation** | Strategy, instrument, session, regime | Where does behavior change? |
+
+## Position Sizing & Exposure Risk
+
+The dashboard includes a transparent, broker-agnostic risk-control layer that connects account-level risk assumptions to trade exposure:
+
+```text
+Account Equity
+      ↓
+Risk % per Trade
+      ↓
+Risk Budget
+      ↓
+Stop Distance × Value per Unit
+      ↓
+Position Size
+      ↓
+Entry Price × Contract Size
+      ↓
+Notional Exposure
+      ↓
+Leverage
+      ↓
+Simplified Margin Requirement
+      ↓
+Exposure % / Limit Check
+```
+
+Core formulas:
+
+- **Risk budget** = account equity × risk % / 100
+- **Position size** = risk budget / (stop distance × value per unit)
+- **Notional exposure** = position size × entry price × contract size
+- **Margin requirement** = notional exposure / leverage
+- **Exposure %** = notional exposure / account equity × 100
+- **Leverage ratio** = notional exposure / account equity
+- **Exposure check** = exposure % ≤ maximum exposure %
+
+The calculator validates non-positive or invalid inputs rather than silently producing misleading results. These are generic analytical formulas, not a broker's margin engine. Actual trading requirements can depend on instrument specifications, currency conversion, account currency, broker rules, and other market-specific mechanics.
 
 ## Historical Forex Validation
 
@@ -106,6 +149,8 @@ Performance → Drawdown & Tail Risk
         ↓
 Concentration → Strategy / Instrument / Session / Regime Segmentation
         ↓
+Position Sizing → Exposure → Margin → Limit Check
+        ↓
 Public Forex Data → Lagged Signal → Cost-Aware Backtest
         ↓
 SQL + Visual Reporting
@@ -117,7 +162,9 @@ Risk-Control Questions
 
 **Performance analytics** — gross/net P&L, win rate, profit factor, expectancy, average trade.
 
-**Risk analytics** — drawdown, downside deviation, VaR/CVaR, volatility, recovery factor.
+**Risk analytics** — drawdown, CVaR, VaR, volatility, recovery factor, and dispersion of losing trades.
+
+**Exposure analytics** — risk budgeting, position sizing, notional exposure, simplified margin, leverage, and limit checks using explicit assumptions.
 
 **Execution-aware analysis** — explicit spread, slippage, and commission assumptions so gross and net results can be compared.
 
@@ -127,7 +174,7 @@ Risk-Control Questions
 
 **Statistical discipline** — the Sharpe-style measure is explicitly treated as a trade-level proxy, not an annualized Sharpe ratio.
 
-**Business communication** — `Return → execution costs → downside → concentration → segmentation → validation → risk-control question`.
+**Business communication** — `Return → execution costs → downside → concentration → segmentation → exposure controls → validation → risk-control question`.
 
 ## Tech Stack
 
@@ -161,6 +208,7 @@ The optional market-data commands require network access. They write downloaded 
 | Folder / File | Purpose |
 |---|---|
 | `app.py` | Interactive Streamlit dashboard |
+| `src/exposure_risk.py` | Position sizing, notional exposure, margin, leverage, and limit checks |
 | `src/market_data.py` | Public historical Forex data ingestion |
 | `src/backtest.py` | Lagged, cost-aware market backtest |
 | `src/risk_analysis.py` | Drawdown and tail-risk metrics |
@@ -177,6 +225,8 @@ The core portfolio dataset is **synthetic**, fixed-seed, and created for reprodu
 
 The historical validation path uses public market observations, but the strategy is deliberately simplified and its spread, slippage, commission, position size, and signal parameters are assumptions. Historical backtests are not evidence of future performance.
 
+The position-sizing and exposure layer is **generic and broker-agnostic**. It demonstrates transparent risk-control logic but does not model every broker, instrument, currency-conversion, or margin rule.
+
 The project does **not** claim live execution, broker connectivity, institutional risk limits, or production portfolio-management functionality. Those are intentionally outside the scope of this portfolio demonstration.
 
 Results are not investment advice.
@@ -186,5 +236,5 @@ Results are not investment advice.
 Part of a three-project analytics portfolio:
 
 - **Macro Market Intelligence** — economic and market context
-- **Trading Risk & Performance Analytics** — financial risk, execution-aware performance, and historical-market validation
+- **Trading Risk & Performance Analytics** — financial risk, execution-aware performance, exposure controls, and historical-market validation
 - **Customer Support Analytics** — business and operations analytics
