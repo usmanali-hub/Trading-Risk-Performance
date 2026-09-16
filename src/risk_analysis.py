@@ -50,7 +50,9 @@ def risk_summary(df):
         "max_drawdown": max_drawdown,
         "max_drawdown_pct": x["drawdown_pct"].min(),
         "pnl_std": pnl.std(),
-        "downside_deviation": negative.std() if len(negative) > 1 else 0,
+        # Dispersion of losing trades only; this is not target-based
+        # downside deviation as used in a conventional Sortino calculation.
+        "negative_pnl_std": negative.std() if len(negative) > 1 else 0,
         "trade_level_sharpe_proxy": (pnl.mean() / pnl.std() * np.sqrt(len(pnl))) if pnl.std() else 0,
         "var_95_trade_pnl": var_95,
         "cvar_95_trade_pnl": tail.mean() if len(tail) else var_95,
