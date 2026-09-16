@@ -33,12 +33,28 @@ The optional Forex validation path downloads public daily OHLC observations for 
 
 ## Derived risk measures
 
-- Equity: cumulative net P&L.
-- Drawdown: equity minus prior peak equity.
-- Maximum drawdown: largest peak-to-trough equity decline.
-- VaR 95%: fifth percentile of trade P&L, used as a trade-level loss threshold.
-- CVaR 95%: average P&L of trades below the VaR threshold.
-- Recovery factor: total P&L divided by absolute maximum drawdown when drawdown is non-zero.
+- **Equity:** cumulative net P&L used for portfolio analytics in this project.
+- **Drawdown:** equity minus the prior running peak.
+- **Maximum drawdown:** largest peak-to-trough equity decline.
+- **VaR 95%:** fifth percentile of trade P&L, used as a trade-level loss threshold.
+- **CVaR 95%:** average P&L of trades at or below the VaR threshold.
+- **Recovery factor:** total P&L divided by absolute maximum drawdown when maximum drawdown is negative.
+- **Negative P&L standard deviation:** standard deviation of losing-trade P&L; this is a dispersion measure for losing trades, not conventional target-based downside deviation.
+- **Sharpe-style proxy:** trade-level return/risk statistic used for comparative analysis; it is not annualized.
+
+## Position sizing and exposure measures
+
+The dashboard's exposure calculator uses explicit, broker-agnostic assumptions:
+
+- **Risk budget:** account equity × risk % / 100.
+- **Position size:** risk budget / (stop distance × value per unit).
+- **Notional exposure:** position size × entry price × contract size.
+- **Margin requirement:** notional exposure / leverage.
+- **Exposure %:** notional exposure / account equity × 100.
+- **Leverage ratio:** notional exposure / account equity.
+- **Exposure limit check:** PASS when exposure % is less than or equal to the configured maximum exposure %; otherwise BREACH.
+
+Inputs are validated so non-positive or invalid values are rejected. The formulas are intended for transparent portfolio-analysis demonstrations and do not replace broker-specific margin, contract, or currency-conversion rules.
 
 ## Backtest assumptions
 
