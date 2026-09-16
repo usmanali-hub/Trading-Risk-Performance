@@ -7,6 +7,15 @@ import pandas as pd
 import streamlit as st
 
 from src.backtest import backtest_summary, moving_average_backtest
+from src.exposure_risk import (
+    exposure_pct,
+    leverage_ratio,
+    margin_requirement,
+    notional_exposure,
+    position_size,
+    risk_amount,
+    within_exposure_limit,
+)
 from src.market_data import download_daily
 from src.risk_analysis import risk_summary
 
@@ -67,6 +76,43 @@ c1.metric("Trades", f"{len(filtered):,}")
 c2.metric("Net Win Rate", f"{filtered.pnl.gt(0).mean()*100:.1f}%")
 c3.metric("Execution Costs", f"{total_cost:,.2f}", delta=f"Gross {gross_pnl:,.2f}")
 
+st.subheader("Position Sizing & Exposure Risk")
+st.caption("A transparent, broker-agnostic risk-control model: Account → Risk Budget → Position Size → Exposure → Margin → Limit Check.")
+with st.expander("Open risk calculator", expanded=True):
+    r1, r2, r3, r4 = st.columns(4)
+    account_equity = r1.number_input("Account equity", min_value=1.0, value=10_000.0, step=500.0)
+    risk_pct = r2.number_input("Risk per trade (%)", min_value=0.0, max_value=100.0, value=1.0, step=0.25)
+    stop_distance = r3.number_input("Stop distance", min_value=0.000001, value=20.0, step=1.0, format="%.6f")
+    value_per_unit = r4.number_input("Value per unit", min_value=0.000001, value=1.0, step=0.1, format="%.6f")
+
+    r1, r2, r3, r4 = st.columns(4)
+    entry_price = r1.number_input("Entry price", min_value=0.000001, value=2_000.0, step=10.0, format="%.6f")
+    contract_size = r2.number_input("Contract size", min_value=0.000001, value=1.0, step=1.0, format="%.6f")
+    leverage = r3.number_input("Leverage (×)", min_value=0.000001, value=20.0, step=1.0, format="%.6f")
+    max_exposure = r4.number_input("Max exposure (%)", min_value=0.0, value=200.0, step=10.0)
+
+    try:
+        risk_budget = risk_amount(account_equity, risk_pct)
+        units = position_size(risk_budget, stop_distance, value_per_unit)
+        notional = notional_exposure(units, entry_price, contract_size)
+        margin = margin_requirement(notional, leverage)
+        exposure = exposure_pct(notional, account_equity)
+        gross_leverage = leverage_ratio(notional, account_equity)
+        within_limit = within_exposure_limit(notional, account_equity, max_exposure)
+
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Risk budget", f"{risk_budget:,.2f}")
+        m2.metric("Position size", f"{units:,.4f}")
+        m3.metric("Notional exposure", f"{notional:,.2f}")
+        m4.metric("Margin requirement", f"{margin:,.2f}")
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Exposure", f"{exposure:,.2f}%")
+        m2.metric("Leverage ratio", f"{gross_leverage:,.2f}×")
+        m3.metric("Exposure limit", "PASS" if within_limit else "BREACH")
+    except ValueError as exc:
+        st.error(f"Risk calculation error: {exc}")
+
 left, right = st.columns(2)
 with left:
     st.subheader("Net Equity Curve")
@@ -124,4 +170,4 @@ if st.button("Run EURUSD historical validation"):
         st.error(f"Historical validation could not be completed: {exc}")
 
 st.subheader("Risk Notes")
-st.info("The core portfolio dataset is synthetic and fixed-seed. Its metrics are analytical demonstrations. The historical validation path uses public market data and explicit assumptions, but it is still a simplified backtest rather than a live execution system.")
+st.info("The core portfolio dataset is synthetic and fixed-seed. Its metrics are analytical demonstrations. The exposure calculator uses simplified, broker-agnostic formulas; actual Forex margin and exposure can depend on instrument specifications, currency conversion, and broker rules. The historical validation path uses public market data and explicit assumptions, but it is still a simplified backtest rather than a live execution system.")
