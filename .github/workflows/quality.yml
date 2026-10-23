@@ -24,3 +24,6 @@ jobs:
       - run: python src/create_visualizations.py
       - run: python -m compileall src tests
       - run: PYTHONPATH=. pytest -q
+      - name: Smoke-test the dashboard
+        run: |
+          python -c "from streamlit.testing.v1 import AppTest; at = AppTest.from_file('app.py', default_timeout=120).run(); assert not at.exception, at.exception"
